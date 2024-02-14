@@ -1,0 +1,100 @@
+import React, { useState, useEffect } from "react";
+import { DragDropContext } from "react-beautiful-dnd";
+import Column from "./Column";
+
+export default function Board() {
+  const [tasks, setTasks] = useState([]);
+
+  useEffect(() => {
+    fetch(
+      "https://gist.githubusercontent.com/ironhack-edu/60c9f1fc5c306858c0a80e961441272e/raw/3d66b0b0a6f201ffa89a36b14a63bac74e7239d9/kanban.json"
+    )
+      .then((response) => response.json())
+      .then((json) => {
+        setTasks(json);
+      });
+  }, []);
+
+  const handleDragEnd = (result) => {
+    const { destination, source, draggableId } = result;
+
+    if (!destination || source.droppableId === destination.droppableId) return;
+
+    deletePreviousState(source.droppableId, draggableId);
+
+    const task = findItemById(draggableId, tasks);
+
+    setNewState(destination.droppableId, task);
+  };
+
+  function deletePreviousState(sourceDroppableId, taskId) {
+    setTasks((prevTasks) => {
+      const updatedTasks = prevTasks.map((task) => {
+        if (task.id === taskId) {
+          return { ...task, status: getStatusFromId(sourceDroppableId) };
+        }
+        return task;
+      });
+      return updatedTasks;
+    });
+  }
+
+  function setNewState(destinationDroppableId, task) {
+    const updatedTask = {
+      ...task,
+      status: getStatusFromId(destinationDroppableId),
+    };
+
+    setTasks((prevTasks) => [updatedTask, ...prevTasks]);
+  }
+
+  function getStatusFromId(droppableId) {
+    switch (droppableId) {
+      case "1":
+        return "To Do";
+      case "2":
+        return "In Progress";
+      case "3":
+        return "Done";
+      default:
+        return "";
+    }
+  }
+
+  function findItemById(id, array) {
+    return array.find((item) => item.id === id);
+  }
+
+  return (
+    <DragDropContext onDragEnd={handleDragEnd}>
+      <h2 style={{ textAlign: "center" }}>PROGRESS BOARD</h2>
+
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          flexDirection: "row",
+          width: "1300px",
+          margin: "0 auto",
+        }}
+      >
+        <Column
+          title={"TO DO"}
+          tasks={tasks.filter((task) => task.status === "To Do")}
+          id={"1"}
+        />
+        <Column
+          title={"IN PROGRESS"}
+          tasks={tasks.filter((task) => task.status === "In Progress")}
+          id={"2"}
+        />
+        <Column
+          title={"DONE"}
+          tasks={tasks.filter((task) => task.status === "Done")}
+          id={"3"}
+        />
+      </div>
+    </DragDropContext>
+  );
+}

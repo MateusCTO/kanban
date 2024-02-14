@@ -3,17 +3,19 @@ import { DragDropContext } from "react-beautiful-dnd";
 import Column from "./Column";
 
 export default function Board() {
-  const [completed, setCompleted] = useState([]);
-  const [incomplete, setIncomplete] = useState([]);
-  const [backlog, setBacklog] = useState([]);
-  const [inReview, setInReview] = useState([]);
+  const [toDo, setToDo] = useState([]);
+  const [inProgress, setInProgress] = useState([]);
+  const [done, setDone] = useState([]);
 
   useEffect(() => {
-    fetch("src/data/data.json")
+    fetch(
+      "https://gist.githubusercontent.com/ironhack-edu/60c9f1fc5c306858c0a80e961441272e/raw/3d66b0b0a6f201ffa89a36b14a63bac74e7239d9/kanban.json"
+    )
       .then((response) => response.json())
       .then((json) => {
-        setCompleted(json.filter((task) => task.completed));
-        setIncomplete(json.filter((task) => !task.completed));
+        setToDo(json.filter((task) => task.status === "To Do"));
+        setInProgress(json.filter((task) => task.status === "In Progress"));
+        setDone(json.filter((task) => task.status === "Done"));
       });
   }, []);
 
@@ -24,12 +26,7 @@ export default function Board() {
 
     deletePreviousState(source.droppableId, draggableId);
 
-    const task = findItemById(draggableId, [
-      ...incomplete,
-      ...completed,
-      ...inReview,
-      ...backlog,
-    ]);
+    const task = findItemById(draggableId, [...toDo, ...inProgress, ...done]);
 
     setNewState(destination.droppableId, task);
   };
@@ -37,51 +34,42 @@ export default function Board() {
   function deletePreviousState(sourceDroppableId, taskId) {
     switch (sourceDroppableId) {
       case "1":
-        setIncomplete(removeItemById(taskId, incomplete));
+        setToDo(removeItemById(taskId, toDo));
         break;
       case "2":
-        setCompleted(removeItemById(taskId, completed));
+        setInProgress(removeItemById(taskId, inProgress));
         break;
       case "3":
-        setInReview(removeItemById(taskId, inReview));
-        break;
-      case "4":
-        setBacklog(removeItemById(taskId, backlog));
+        setDone(removeItemById(taskId, done));
         break;
     }
   }
+
   function setNewState(destinationDroppableId, task) {
-    let updatedTask;
     switch (destinationDroppableId) {
       case "1": // TO DO
-        updatedTask = { ...task, completed: false };
-        setIncomplete([updatedTask, ...incomplete]);
+        setToDo([...toDo, task]);
         break;
-      case "2": // DONE
-        updatedTask = { ...task, completed: true };
-        setCompleted([updatedTask, ...completed]);
+      case "2": // IN PROGRESS
+        setInProgress([...inProgress, task]);
         break;
-      case "3": // IN REVIEW
-        updatedTask = { ...task, completed: false };
-        setInReview([updatedTask, ...inReview]);
-        break;
-      case "4": // BACKLOG
-        updatedTask = { ...task, completed: false };
-        setBacklog([updatedTask, ...backlog]);
+      case "3": // DONE
+        setDone([...done, task]);
         break;
     }
   }
+
   function findItemById(id, array) {
-    return array.find((item) => item.id == id);
+    return array.find((item) => item.id === id);
   }
 
   function removeItemById(id, array) {
-    return array.filter((item) => item.id != id);
+    return array.filter((item) => item.id !== id);
   }
 
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
-      <h2 style={{ textAlign: "center" }}>PROGRESS BOARD</h2>
+      <h2 style={{ textAlign: "center" }}>PROJECT BOARD</h2>
 
       <div
         style={{
@@ -93,10 +81,9 @@ export default function Board() {
           margin: "0 auto",
         }}
       >
-        <Column title={"TO DO"} tasks={incomplete} id={"1"} />
-        <Column title={"DONE"} tasks={completed} id={"2"} />
-        <Column title={"IN REVIEW"} tasks={inReview} id={"3"} />
-        <Column title={"BACKLOG"} tasks={backlog} id={"4"} />
+        <Column title={"TO DO"} tasks={toDo} id={"1"} />
+        <Column title={"IN PROGRESS"} tasks={inProgress} id={"2"} />
+        <Column title={"DONE"} tasks={done} id={"3"} />
       </div>
     </DragDropContext>
   );
