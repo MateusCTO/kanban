@@ -1,38 +1,73 @@
+import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Route } from "react-router-dom";
 
-function CardDetails(props) {
-  const [cardDetails, setCardDetails] = useState(null);
+function CardDetails() {
+  const { id } = useParams();
+  const [card, setCard] = useState(null);
+
   useEffect(() => {
-    // Destructure props
-    const { id } = props;
-
-    fetch
-      .get(`src/data/data.json/${id}`)
-      .then((response) => {
-        setCardDetails(response);
+    fetch(`http://localhost:3000/cards/${id}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setCard(data);
       })
       .catch((error) => {
         console.log(error);
       });
-  }, []);
+  }, [id]);
+
   return (
-    <div>
-      {cardDetails &&
-        cardDetails.map((card) => {
-          return (
-            <article key={card.id}>
-              <h3>{card.title}</h3>
-              <p>{card.description}</p>
-              <p>{card.assignee}</p>
-              <p>{card.status}</p>
-              <p>{card.priority}</p>
-              <p>{card.createdDate}</p>
-              <p>{card.dudeDate}</p>
-            </article>
-          );
-        })}
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        border: "1px solid black",
+        borderRadius: "30px",
+        backgroundColor: "lightgreen",
+        margin: "100px",
+        width: "500px",
+      }}
+    >
+      {card && (
+        <article
+          key={card.id}
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            padding: 2,
+            flexDirection: "column",
+          }}
+        >
+          <h3>TASK: {card.title}</h3>
+          <p>
+            <b>Developer: </b>
+            {card.assignee}
+          </p>
+          <p>
+            <b>Description: </b>
+            {card.description}
+          </p>
+          <p>
+            <b>Status: </b>
+            {card.status}
+          </p>
+          <p>
+            <b>Priority: </b>
+            {card.priority}
+          </p>
+          <p>
+            <b>Create Date: </b>
+            {card.createdDate}
+          </p>
+          <p>
+            <b>Due Date: </b>
+            {card.dueDate}
+          </p>
+        </article>
+      )}
     </div>
   );
 }
+
 export default CardDetails;

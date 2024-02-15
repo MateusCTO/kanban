@@ -8,7 +8,7 @@ function App() {
     <div>
       <Routes>
         <Route path="/" element={<KanbanBoard />} />;
-        <Route path="/cardDetails/:id" element={<CardDetails />} />
+        <Route path="/cards/:id" element={<CardDetails />} />
       </Routes>
     </div>
   );
