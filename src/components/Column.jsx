@@ -3,6 +3,7 @@ import styled from "styled-components";
 import Card from "./Card";
 import "./scroll.css";
 import { Droppable } from "react-beautiful-dnd";
+import { Link } from "react-router-dom";
 
 const Container = styled.div`
   background-color: #f4f5f7;
@@ -49,7 +50,9 @@ export default function Column({ title, tasks, id }) {
             isDraggingOver={snapshot.isDraggingOver}
           >
             {tasks.map((task, index) => (
-              <Card key={index} index={index} task={task} />
+              <Link style={{ textDecoration: "none" }} to={`/cards/${task.id}`}>
+                <Card key={index} index={index} task={task} />
+              </Link>
             ))}
             {provided.placeholder}
           </TaskList>

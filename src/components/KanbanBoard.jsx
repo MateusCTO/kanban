@@ -8,9 +8,7 @@ export default function Board() {
   const [done, setDone] = useState([]);
 
   useEffect(() => {
-    fetch(
-      "https://gist.githubusercontent.com/ironhack-edu/60c9f1fc5c306858c0a80e961441272e/raw/3d66b0b0a6f201ffa89a36b14a63bac74e7239d9/kanban.json"
-    )
+    fetch("http://localhost:3000/cards")
       .then((response) => response.json())
       .then((json) => {
         setToDo(json.filter((task) => task.status === "To Do"));
