@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 
 const Container = styled.div`
   background-color: #f4f5f7;
-  border-radius: 2.5px;
+  border-radius: 10px;
   width: 400px;
   height: 900px;
   overflow-y: scroll;
@@ -18,7 +18,7 @@ const Container = styled.div`
 
 const Title = styled.h3`
   padding: 8px;
-  background-color: pink;
+  background-color: #2e2d63;
   text-align: center;
 `;
 
@@ -35,7 +35,6 @@ export default function Column({ title, tasks, id }) {
     <Container className="column">
       <Title
         style={{
-          backgroundColor: "lightblue",
           position: "sticky",
           top: "0",
         }}

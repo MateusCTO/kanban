@@ -1,6 +1,7 @@
 import React from "react";
 import { Draggable } from "react-beautiful-dnd";
 import styled from "styled-components";
+import "./scroll.css";
 
 const Container = styled.div`
   border-radius: 10px;
@@ -27,14 +28,14 @@ const Icons = styled.div`
 `;
 function bgcolorChange(props) {
   return props.isDragging
-    ? "lightgreen"
+    ? "#7a00ff"
     : props.isDraggable
     ? props.isBacklog
       ? "#F2D7D5"
-      : "#DCDCDC"
+      : "pink"
     : props.isBacklog
     ? "#F2D7D5"
-    : "#EAF4FC";
+    : "pink";
 }
 
 export default function Card({ task, index }) {
@@ -42,6 +43,7 @@ export default function Card({ task, index }) {
     <Draggable draggableId={`${task.id}`} key={task.id} index={index}>
       {(provided, snapshot) => (
         <Container
+          className="frontSide"
           {...provided.draggableProps}
           {...provided.dragHandleProps}
           ref={provided.innerRef}
@@ -54,6 +56,7 @@ export default function Card({ task, index }) {
                 {"  "}
               </small>
             </span>
+            <h4>{task.title}</h4>
           </div>
           <div
             style={{
@@ -63,7 +66,6 @@ export default function Card({ task, index }) {
               flexDirection: "column",
             }}
           >
-            <h4>{task.title}</h4>
             <TextContent>{task.description}</TextContent>
           </div>
           {provided.placeholder}
