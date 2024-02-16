@@ -10,29 +10,7 @@ export default function Board() {
   const [inProgress, setInProgress] = useState([]);
   const [done, setDone] = useState([]);
 
-  useEffect(() => {
-    fetch("http://localhost:3000/cards")
-      .then((response) => response.json())
-      .then((json) => {
-        setToDo(json.filter((task) => task.status === "To Do"));
-        setInProgress(json.filter((task) => task.status === "In Progress"));
-        setDone(json.filter((task) => task.status === "Done"));
-      });
-  }, []);
-
-  const handleDragEnd = (result) => {
-    const { destination, source, draggableId } = result;
-
-    if (!destination || source.droppableId === destination.droppableId) return;
-
-    deletePreviousState(source.droppableId, draggableId);
-
-    const task = findItemById(draggableId, [...toDo, ...inProgress, ...done]);
-
-    setNewState(destination.droppableId, task);
-  };
-
-  function deletePreviousState(sourceDroppableId, taskId) {
+  const deletePreviousState = (sourceDroppableId, taskId) => {
     switch (sourceDroppableId) {
       case "1":
         setToDo(removeItemById(taskId, toDo));
@@ -43,39 +21,101 @@ export default function Board() {
       case "3":
         setDone(removeItemById(taskId, done));
         break;
+      default:
+        break;
     }
-  }
+  };
 
-  function setNewState(destinationDroppableId, task) {
+  const handleDragEnd = (result) => {
+    const { destination, source, draggableId } = result;
+
+    if (!destination || source.droppableId === destination.droppableId) return;
+
+    deletePreviousState(source.droppableId, draggableId);
+
+    const task = findItemById(draggableId, [...toDo, ...inProgress, ...done]);
+
+    // Remove the task from the source column
+    switch (source.droppableId) {
+      case "1":
+        setToDo(removeItemById(draggableId, toDo));
+        break;
+      case "2":
+        setInProgress(removeItemById(draggableId, inProgress));
+        break;
+      case "3":
+        setDone(removeItemById(draggableId, done));
+        break;
+      default:
+        break;
+    }
+
+    setNewState(destination.droppableId, task);
+  };
+
+  const setNewState = (destinationDroppableId, task) => {
+    const updatedTask = {
+      ...task,
+      status: getStatusByColumnId(destinationDroppableId),
+    };
+
+    axios
+      .put(`${API_URL}/cards/${task.id}`, updatedTask)
+      .then((response) => {
+        console.log(response.data.status);
+        // Handle the response or update local state if needed
+      })
+      .catch((error) => {
+        console.error("Error updating task status:", error);
+        // Handle errors if needed
+      });
+
     switch (destinationDroppableId) {
       case "1": // TO DO
-        setToDo([...toDo, task]);
-        axios
-          .put(`${API_URL}/cards/${task.id}`)
-          .then((response) => (response.data.status = "To Do"));
+        setToDo([...toDo, updatedTask]);
         break;
       case "2": // IN PROGRESS
-        setInProgress([...inProgress, task]);
-        axios
-          .put(`${API_URL}/cards/${task.id}`)
-          .then((response) => (response.data.status = "In Progress"));
+        setInProgress([...inProgress, updatedTask]);
         break;
       case "3": // DONE
-        setDone([...done, task]);
-        axios
-          .put(`${API_URL}/cards/${task.id}`)
-          .then((response) => (response.data.status = "Done"));
+        setDone([...done, updatedTask]);
+        break;
+      default:
         break;
     }
-  }
+  };
 
-  function findItemById(id, array) {
+  const findItemById = (id, array) => {
     return array.find((item) => item.id === id);
-  }
+  };
 
-  function removeItemById(id, array) {
+  const removeItemById = (id, array) => {
     return array.filter((item) => item.id !== id);
-  }
+  };
+
+  const getStatusByColumnId = (columnId) => {
+    switch (columnId) {
+      case "1":
+        return "To Do";
+      case "2":
+        return "In Progress";
+      case "3":
+        return "Done";
+      default:
+        return "Unknown";
+    }
+  };
+
+  useEffect(() => {
+    axios
+      .get(`${API_URL}/cards`)
+      .then((response) => response.data)
+      .then((json) => {
+        setToDo(json.filter((task) => task.status === "To Do"));
+        setInProgress(json.filter((task) => task.status === "In Progress"));
+        setDone(json.filter((task) => task.status === "Done"));
+      });
+  }, []);
 
   return (
     <DragDropContext onDragEnd={handleDragEnd}>

@@ -1,9 +1,11 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import axios from "axios";
 
 function CardDetails() {
   const { id } = useParams();
   const [card, setCard] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetch(`http://localhost:3000/cards/${id}`)
@@ -16,15 +18,23 @@ function CardDetails() {
       });
   }, [id]);
 
+  const deleteCard = () => {
+    axios
+      .delete(`http://localhost:3000/cards/${id}`)
+      .then(() => {
+        navigate("/");
+      })
+      .catch((error) => console.log(error));
+  };
   return (
     <div
+      className="frontSide"
       style={{
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         border: "1px solid black",
         borderRadius: "30px",
-        backgroundColor: "lightgreen",
         margin: "100px",
         width: "500px",
       }}
@@ -64,6 +74,15 @@ function CardDetails() {
             <b>Due Date: </b>
             {card.dueDate}
           </p>
+          <div>
+            <button
+              style={{ margin: 10 }}
+              className="button-85"
+              onClick={deleteCard}
+            >
+              Delete Card
+            </button>
+          </div>
         </article>
       )}
     </div>
