@@ -50,12 +50,6 @@ export default function Card({ task, index }) {
           isDragging={snapshot.isDragging}
         >
           <div style={{ display: "flex", justifyContent: "start", padding: 2 }}>
-            <span>
-              <small>
-                #{task.id}
-                {"  "}
-              </small>
-            </span>
             <h4>{task.title}</h4>
           </div>
           <div

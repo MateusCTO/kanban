@@ -25,9 +25,9 @@ const Title = styled.h3`
 const TaskList = styled.div`
   padding: 3px;
   transistion: background-color 0.2s ease;
-  background-color: #f4f5f7;
+  background-color: transparent;
   flex-grow: 1;
-  min-height: 500px;
+  min-height: 600px;
 `;
 
 export default function Column({ title, tasks, id }) {

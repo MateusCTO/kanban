@@ -51,8 +51,8 @@ function CardDetails() {
         >
           <h3>TASK: {card.title}</h3>
           <p>
-            <b>Developer: </b>
-            {card.assignee}
+            <b>User: </b>
+            {card.user}
           </p>
           <p>
             <b>Description: </b>

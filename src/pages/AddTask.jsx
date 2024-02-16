@@ -7,15 +7,27 @@ const API_URL = "http://localhost:3000";
 function AddTask() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [priority, setPriority] = useState(null);
+  const [priority, setPriority] = useState("Low");
   const [dueDate, setDueDate] = useState(null);
+  const [user, setUser] = useState(null);
 
   const navigate = useNavigate();
 
   function handleSubmit(e) {
     e.preventDefault();
     const status = "To Do";
-    const task = { title, description, priority, dueDate, status };
+    const createdDate = new Date().toDateString();
+    const formatedDueDate = new Date(dueDate).toDateString();
+
+    const task = {
+      title,
+      description,
+      priority,
+      dueDate: formatedDueDate,
+      status,
+      user,
+      createdDate,
+    };
 
     axios
       .post(`${API_URL}/cards`, task)
@@ -23,8 +35,21 @@ function AddTask() {
       .catch((error) => console.log(error));
   }
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
+    <div
+      className="frontSide"
+      style={{ margin: "100px", height: "280px", width: "400px" }}
+    >
+      <form
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "start",
+          marginLeft: "5px",
+          height: "250px",
+          justifyContent: "space-between",
+        }}
+        onSubmit={handleSubmit}
+      >
         <label>
           Title:{" "}
           <input
@@ -33,6 +58,16 @@ function AddTask() {
             type="text"
             required
             onChange={(e) => setTitle(e.target.value)}
+          />
+        </label>
+        <label>
+          User:{" "}
+          <input
+            value={user}
+            name="user"
+            type="text"
+            required
+            onChange={(e) => setUser(e.target.value)}
           />
         </label>
 
@@ -49,14 +84,15 @@ function AddTask() {
 
         <label>
           Priority :{" "}
-          <input
-            value={priority}
+          <select
             name="priority"
-            type="text"
-            placeholder="Low, Medium or High"
             required
             onChange={(e) => setPriority(e.target.value)}
-          />
+          >
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
+          </select>
         </label>
         <label>
           Due date :{" "}
@@ -69,7 +105,13 @@ function AddTask() {
           />
         </label>
 
-        <button type="submit">Add Task</button>
+        <button
+          style={{ alignSelf: "center" }}
+          className="button-85"
+          type="submit"
+        >
+          Add Task
+        </button>
       </form>
     </div>
   );
