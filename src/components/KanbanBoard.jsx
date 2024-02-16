@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { DragDropContext } from "react-beautiful-dnd";
 import Column from "./Column";
+import axios from "axios";
+
+const API_URL = "http://localhost:3000";
 
 export default function Board() {
   const [toDo, setToDo] = useState([]);
@@ -47,12 +50,21 @@ export default function Board() {
     switch (destinationDroppableId) {
       case "1": // TO DO
         setToDo([...toDo, task]);
+        axios
+          .put(`${API_URL}/cards/${task.id}`)
+          .then((response) => (response.data.status = "To Do"));
         break;
       case "2": // IN PROGRESS
         setInProgress([...inProgress, task]);
+        axios
+          .put(`${API_URL}/cards/${task.id}`)
+          .then((response) => (response.data.status = "In Progress"));
         break;
       case "3": // DONE
         setDone([...done, task]);
+        axios
+          .put(`${API_URL}/cards/${task.id}`)
+          .then((response) => (response.data.status = "Done"));
         break;
     }
   }

@@ -13,7 +13,7 @@ export default function Navbar() {
       <NavLink className="button-85" to="/">
         Home
       </NavLink>
-      <NavLink className="button-85" to="/">
+      <NavLink className="button-85" to="/cards/addtask">
         New Task
       </NavLink>
     </nav>
